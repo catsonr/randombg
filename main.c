@@ -73,8 +73,7 @@ int main(int argc, char **argv) {
 
 	do {
 		system(generateCommand());
-		if(looping) sleep(60 * 60);
-		//generateCommand();
+		if(looping) sleep(60* 60);
 	} while(looping);
 
 	return 0;
@@ -95,8 +94,7 @@ char* getFileFromDir(const char* dir, int index) {
 char* generateCommand() {
 	char* initialCommand = "feh --bg-fill ";
 	char* file = getFileFromDir(dirString, rand() % fileCount + 1);
-	//char* command = malloc(sizeof(char) * (strlen(initialCommand) + strlen(dirString) + strlen(file) + 9)); // +3 for /''
-	char command[1000];
+	char* command = malloc(strlen(initialCommand) + strlen(dirString) + strlen("/''") + strlen(file) + 1);
 
 	strcpy(command, initialCommand);
 	strcat(command, dirString);
@@ -104,6 +102,6 @@ char* generateCommand() {
 	strcat(command, file);
 	strcat(command, "'");
 
-	if(strcmp(command, "") != 0) return strdup(command);
+	if(strcmp(command, "") != 0) return command;
 	return "echo unable to change background (error generating command)";
 } 
