@@ -5,6 +5,7 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include <ctype.h>
 
 int fileCount;
 
@@ -15,15 +16,17 @@ const char* dirString;
 int looping = 0;
 
 #define loopTimerFlag 't'
-char* loopTimer;
+int loopLength = 60 * 60;
 
 char* getFileFromDir(const char* dir, int index);
+int loopLengthToInt(char* lengthStr);
 char* generateCommand();
 
 int main(int argc, char **argv) {
+	// seeds randomness from time
 	srand(time(0));
 
-	// loops over all args provided, sans the program call
+	// loops over all args provided	
 	for(int i = 1; i < argc; i++) {
 
 		// checks if arg is directory
@@ -53,27 +56,28 @@ int main(int argc, char **argv) {
 			switch(argv[i][1]) {
 				case loopFlag:
 					looping = 1;
+
 					break;
-				case loopTimerFlag:
-					for(int j = 1; i < sizeof(argv[j]) / sizeof(char*); j++) {
-						loopTimer[j - 1] = argv[i][j];
-					}
+				case loopTimerFlag: {// brackets because compiler gets angry when defining variables at the start of a switch case
+					char* loopLengthStr = malloc(strlen(argv[i]) - 1);
+					strcpy(loopLengthStr, &argv[i][2]);
+					loopLength = loopLengthToInt(loopLengthStr);
+
 					break;
+				}
 			}
 		}
 	}
 
-	// checks for needed things before executing commands
+	// if user didn't provide directory
 	if(!dirProvided) {
 		printf("please provide a directory. exiting...\n");
 		return 0;
 	}
 
-
-
 	do {
-		system(generateCommand());
-		if(looping) sleep(60* 60);
+		//system(generateCommand());
+		if(looping) sleep(loopLength);
 	} while(looping);
 
 	return 0;
@@ -89,6 +93,29 @@ char* getFileFromDir(const char* dir, int index) {
 	}
 
 	return "";
+}
+
+int loopLengthToInt(char* lengthStr) {
+	const char timeType = lengthStr[strlen(lengthStr) - 1];
+	lengthStr[strlen(lengthStr) - 1] = 0;
+
+	switch(timeType) {
+		case 's':
+			return atoi(lengthStr);
+			break;
+		case 'm':
+			return atoi(lengthStr) * 60;
+			break;
+
+		case 'h':
+			return atoi(lengthStr) * 60 * 60;
+			break;
+		case 'd':
+			return atoi(lengthStr) * 60 * 60 * 24;
+			break;
+	}
+	
+	return -1;
 }
 
 char* generateCommand() {
