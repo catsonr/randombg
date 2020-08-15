@@ -18,6 +18,7 @@ int looping = 0;
 #define loopTimerFlag 't'
 int loopLength = 60 * 60;
 
+void countFiles();
 char* getFileFromDir(const char* dir, int index);
 int loopLengthToInt(char* lengthStr);
 char* generateCommand();
@@ -34,18 +35,7 @@ int main(int argc, char **argv) {
 			DIR* dirCheck = opendir(argv[i]);
 			if(dirCheck) {
 				dirProvided = 1;
-
 				dirString = argv[i];
-
-				struct dirent* dir;
-				fileCount = 0; 
-
-				// loops through all files in dir
-				while((dir = readdir(dirCheck)) != NULL) {
-					// ignores . and ..
-					if(strcmp(dir -> d_name, ".") != 0 && strcmp(dir -> d_name, "..") != 0) fileCount++; 
-				}
-				closedir(dirCheck);
 
 				continue;
 			}
@@ -76,11 +66,20 @@ int main(int argc, char **argv) {
 	}
 
 	do {
-		//system(generateCommand());
+		countFiles();
+		system(generateCommand());
 		if(looping) sleep(loopLength);
 	} while(looping);
 
 	return 0;
+}
+
+void countFiles() {
+	struct dirent* dir;
+	DIR* dirCheck = opendir(dirString);
+	fileCount = 0;
+	while((dir = readdir(dirCheck)) != NULL)
+		if(strcpy(dir -> d_name, ".") != 0 && strcmp(dir -> d_name, "..") != 0) fileCount++;
 }
 
 char* getFileFromDir(const char* dir, int index) {
@@ -106,7 +105,6 @@ int loopLengthToInt(char* lengthStr) {
 		case 'm':
 			return atoi(lengthStr) * 60;
 			break;
-
 		case 'h':
 			return atoi(lengthStr) * 60 * 60;
 			break;
