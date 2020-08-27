@@ -18,6 +18,9 @@ int looping = 0;
 #define loopTimerFlag 't'
 int loopLength = 60 * 60;
 
+#define outputFlag 'o'
+int outputting = 0;
+
 void countFiles();
 char* getFileFromDir(const char* dir, int index);
 int loopLengthToInt(char* lengthStr);
@@ -54,6 +57,9 @@ int main(int argc, char **argv) {
 					loopLength = loopLengthToInt(loopLengthStr);
 
 					break;
+				case outputFlag:
+					outputting = 1;
+					break;
 				}
 			}
 		}
@@ -68,6 +74,7 @@ int main(int argc, char **argv) {
 	do {
 		countFiles();
 		system(generateCommand());
+		if(outputting) printf("background changed\n");
 		if(looping) sleep(loopLength);
 	} while(looping);
 
