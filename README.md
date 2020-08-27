@@ -16,6 +16,8 @@ clone the repo
 
 -t: changes sleep length (ex: -t60s, -t30m, -t1d)
 
+-o: outputs to terminal
+
 # misc
 
 place in your .xinitrc and run as a background task to have it execute at start-up
